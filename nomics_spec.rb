@@ -6,14 +6,18 @@ require 'rspec/autorun'
 API_KEY = "58d6a6eebbdada7f85829034d4ec2abdb9e371a9"
 
 class NomicsTest
+
   def get_currencies(tickers="BTC", attributes="", fiat="USD")
     uri = URI('https://api.nomics.com/v1/currencies/ticker')
     params = { key: API_KEY, ids: tickers,  attributes: attributes, convert: fiat }
     uri.query = URI.encode_www_form(params)
     res = Net::HTTP.get_response(uri)
     data = JSON.parse(res.body)
+    data = data.map{|obj| get_attributes(obj, attributes) } unless attributes.empty? # this is for getting specific attributes
     return data
   end
+
+  
 
   def convert_currency(from="BTC", to="ETH")
     from_price = get_currencies(from)[0]["price"].to_f
@@ -22,8 +26,16 @@ class NomicsTest
     puts "1#{from}=#{calculated}#{to}"
     return calculated
   end
+
+  private
+  def get_attributes(obj, attributes)
+    arr= {}
+    attributes.split(",").each { |s| arr[s.strip] = obj[s.strip]}
+    return arr
+  end
 end
 
+#I can verify the results in better way but there is less time and I need to generate api key my self and learning api as well
 
 RSpec.describe NomicsTest do
   it "should retrieve a list of cryptocurrencies given set of tickers" do
