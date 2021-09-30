@@ -6,7 +6,6 @@ require 'rspec/autorun'
 API_KEY = "58d6a6eebbdada7f85829034d4ec2abdb9e371a9"
 
 class NomicsTest
-
   def get_currencies(tickers="BTC", attributes="", fiat="USD")
     uri = URI('https://api.nomics.com/v1/currencies/ticker')
     params = { key: API_KEY, ids: tickers,  attributes: attributes, convert: fiat }
